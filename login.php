@@ -12,18 +12,11 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 require_once "config.php";
  
 // Define variables and initialize with empty values
-$name = $password = "";
-$name_err = $password_err = $login_err = "";
+$name = $password = $email = "";
+$name_err = $password_err = $login_err = $email_err = "";
  
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
- 
-    // Check if name is empty
-    if(empty(trim($_POST["name"]))){
-        $name_err = "Please enter Name.";
-    } else{
-        $name = trim($_POST["name"]);
-    }
     
     // Check if password is empty
     if(empty(trim($_POST["password"]))){
@@ -31,18 +24,25 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else{
         $password = trim($_POST["password"]);
     }
+
+    // Check if email is empty; else post email to new acct
+    if(empty(trim($_POST["email"]))){
+        $email_err = "Please enter your email";
+    } else {
+        $email = trim($_POST["email"]);
+    }
     
     // Validate credentials
     if(empty($name_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT id, name, password FROM user WHERE name = ?";
+        $sql = "SELECT id, name, password, email FROM user WHERE email = ?";
         
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "s", $param_username);
+            mysqli_stmt_bind_param($stmt, "s", $param_email);
             
             // Set parameters
-            $param_username = $name;
+            $param_email = $email;
             
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
@@ -111,11 +111,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" name="name" class="form-control <?php echo (!empty($name_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $name; ?>">
-                <span class="invalid-feedback"><?php echo $name_err; ?></span>
-            </div>    
+            <div>
+                <label>Email</label>
+                <input type="text" name="email" class="form-control <?php echo (!empty($email_err)) ? 'is-invalid' : ''; ?>">
+                <span class="invalid-feedback"><?php echo $email_err; ?></span>
+            </div>
             <div class="form-group">
                 <label>Password</label>
                 <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">

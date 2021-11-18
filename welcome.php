@@ -7,6 +7,17 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: login.php");
     exit;
 }
+
+# Configure SMTP email server
+ini_set("SMTP", "smtp.elasticemail.com");
+ini_set("smtp_port", "2525");
+
+# Testing email functionality 
+$toemail = 'databaseproject24@gmail.com';
+$subject = 'Testing PHP mail';
+$message = 'Someone has successfully logged into the site!';
+$headers = 'From: databaseproject24 @ gmail.com';
+mail($toemail, $subject, $message, $headers);
 ?>
 
 <!DOCTYPE html>

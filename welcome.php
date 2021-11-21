@@ -9,8 +9,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 }
 
 # Configure SMTP email server
-ini_set("SMTP", "smtp.elasticemail.com");
-ini_set("smtp_port", "2525");
+#ini_set("SMTP", "smtp.elasticemail.com");
+#ini_set("smtp_port", "2525");
 
 # Testing email functionality 
 #$toemail = 'databaseproject24@gmail.com';
@@ -36,6 +36,7 @@ ini_set("smtp_port", "2525");
         <a href="reset-password.php" class="btn btn-warning">Reset Your Password</a>
         <a href="logout.php" class="btn btn-danger ml-3">Sign Out of Your Account</a>
         <a href="broadcast.php" class="btn btn-primary">Broadcast an Email</a>
+        <a href="singlemail.php" class="btn btn-secondary">Individual Email</a>
     </p>
 </body>
 </html>

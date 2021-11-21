@@ -12,15 +12,37 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 }
 
 # Set form variables to empty char
-$date = $msg = "";
-$date_err = $msg_err = "";
+$date = $message = "";
+$date_err = "";
+
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+    # Configure SMTP email server
+    ini_set("SMTP", "smtp.elasticemail.com");
+    ini_set("smtp_port", "2525");
 
 
-$sql = "SELECT email FROM user";
+    # Testing email functionality 
+    $toemail = 'databaseproject24@gmail.com';
+    $subject = 'Book order due date';
+    $headers = 'From: databaseproject24 @ gmail.com';
 
-$result = mysqli_query($link, $sql);
+    $sql = "SELECT email FROM user";
 
+    $result = mysqli_query($link, $sql);
 
+    # Populate $date with post submission
+    if(empty(trim($_POST["date"]))){
+        $date_err = "Please enter a date";
+    } else {
+        $date = trim($_POST["date"]);
+    }
+
+    while($row = mysqli_fetch_row($result)){
+        $toemail = $row[0];
+        $message = "This is an announcement to professors to have their book orders completed by " . $date;
+        mail($toemail, $subject, $message, $headers);
+    }
+}
 ?>
 
 
@@ -33,23 +55,18 @@ $result = mysqli_query($link, $sql);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body{ font: 14px sans-serif; text-align: center; }
-        .wrapper{ width: 360px; padding: 20px; margin: auto;}
+        .wrapper{ width: 450px; padding: 20px; margin: auto;}
     </style>
 </head>
 <body>
 <div class="wrapper">
-        <h2>Sign Up</h2>
+        <h2>Broadcast Book Order Due Date to Professors</h2>
         <p>Announcement to all Professors</p>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="get">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
                 <label>Date</label>
-                <input type="date" name="date" class="form-control <?php echo (!empty($date_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $date; ?>">
+                <input type="text" name="date" class="form-control <?php echo (!empty($date_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $date; ?>">
                 <span class="invalid-feedback"><?php echo $date_err; ?></span>
-            </div>
-            <div class="form-group">
-                <label>Message</label>
-                <input type="text" name="msg" class="form-control <?php echo (!empty($msgl_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $msg; ?>">
-                <span class="invalid-feedback"><?php echo $msg_err; ?></span>
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">

@@ -40,6 +40,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     while($row = mysqli_fetch_row($result)){
         $toemail = $row[0];
         $message = "This is an announcement to professors to have their book orders completed by " . $date;
+        $message .= "\n\nClick the link to access our sign in page: http://localhost/dbms-project/dbms-project/login.php";
+
         mail($toemail, $subject, $message, $headers);
     }
 	header("location: welcome.php");

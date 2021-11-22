@@ -31,13 +31,11 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     </style>
 </head>
 <body>
-    <h1 class="my-5">Hi, <b><?php echo htmlspecialchars($_SESSION["name"]); ?></b>. Welcome to our site.</h1>
-    <p>
-        <a href="reset-password.php" class="btn btn-warning">Reset Your Password</a>
-        <a href="logout.php" class="btn btn-danger ml-3">Sign Out of Your Account</a>
-		<a href="createdelete.php" class="btn btn-info">Create/Delete Accounts</a>
-        <a href="broadcast.php" class="btn btn-primary">Broadcast an Email</a>
-        <a href="singlemail.php" class="btn btn-secondary">Individual Email</a>
+    <h1 class="my-5">Hello, <b><?php echo htmlspecialchars($_SESSION["name"]); ?></b>. Please select an action</h1>
+    <p>      
+		<a href="newaccount.php" class="btn btn-primary">Create New Account</a>
+		<a href="delaccount.php" class="btn btn-danger">Delete Existing Account</a>
     </p>
+	<p><a href="welcome.php">Return to main page</a>.</p>
 </body>
 </html>

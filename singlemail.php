@@ -13,7 +13,7 @@ $msg = $msg_err = "";
 $rec_email = $rec_email_err = "";
 $subject = $subject_err = "";
 $user_email = $_SESSION["email"];   # Logged in user's email
-$headers = 'From: databaseproject24 @ gmail.com';
+$headers = 'From: databaseproject24 @ gmail.com'; # Do not alter this
 
 # Do this once the submit button is pressed
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -45,9 +45,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     mail($rec_email, $subject, $msg, $headers);
 	header("location: welcome.php");
 }
-
-
-
 
 ?>
 

@@ -13,13 +13,14 @@ $msg = $msg_err = "";
 $rec_email = $rec_email_err = "";
 $subject = $subject_err = "";
 $user_email = $_SESSION["email"];   # Logged in user's email
+$headers = 'From: databaseproject24 @ gmail.com';
 
 # Do this once the submit button is pressed
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     # Throw error if message box is emtpy
     if(empty(trim($_POST["msg"]))){
-        $msg_err = "Please enter content for the message"
+        $msg_err = "Please enter content for the message";
     } else {
         $msg = trim($_POST["msg"]);
     }
@@ -30,10 +31,19 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else {
         $rec_email = trim($_POST["rec_email"]);
     }
+	
+	# Throw error if subject is empty
+    if(empty(trim($_POST["subject"]))){
+        $subject_err = "Please enter a subject";
+    } else {
+        $subject = trim($_POST["subject"]);
+    }
+	
 
     # Send the email now that the variables are stored
     #mail($toemail, $subject, $message, $headers); ### REMINDER
-    mail($rec_email, )
+    mail($rec_email, $subject, $msg, $headers);
+	header("location: welcome.php");
 }
 
 

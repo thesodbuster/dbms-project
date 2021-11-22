@@ -42,6 +42,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $message = "This is an announcement to professors to have their book orders completed by " . $date;
         mail($toemail, $subject, $message, $headers);
     }
+	header("location: welcome.php");
 }
 ?>
 

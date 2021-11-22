@@ -38,6 +38,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else {
         $subject = trim($_POST["subject"]);
     }
+
+    # Add link to website at the foot of the email
+    $msg .= "\n\nClick the link to access our sign in page: http://localhost/dbms-project/dbms-project/login.php";
 	
 
     # Send the email now that the variables are stored

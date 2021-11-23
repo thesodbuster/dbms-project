@@ -15,7 +15,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $name_err = "Name can only contain letters, numbers, and underscores.";
     } else{
         // Prepare a select statement
-        $sql = "SELECT id FROM user WHERE name = ?";
+        $sql = "SELECT id, privilege FROM user WHERE name = ?";
         
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
@@ -28,12 +28,19 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             if(mysqli_stmt_execute($stmt)){
                 /* store result */
                 mysqli_stmt_store_result($stmt);
-                
-                if(mysqli_stmt_num_rows($stmt) < 1){
-                    $name_err = "This account does not exist";
-                } else{
-                    $name = trim($_POST["name"]);
-                }
+				
+				mysqli_stmt_bind_result($stmt, $id, $privilege);
+				if(mysqli_stmt_fetch($stmt))
+				{
+					if(mysqli_stmt_num_rows($stmt) < 1){
+						$name_err = "This account does not exist";
+					} else{
+						$name = trim($_POST["name"]);
+					}
+				}
+				else {
+					$name_err = "This account does not exist";
+				}
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
             }
@@ -43,10 +50,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
     
-    // Check input errors before inserting in database
-    if(empty($name_err) && empty($password_err) && empty($confirm_password_err)){
+    // Check privilege before deleting from database
+    if($privilege != 2){
         
-        // Prepare an insert statement
+        // Prepare an delete statement
         $sql = "DELETE FROM user WHERE name = ?";
          
         if($stmt = mysqli_prepare($link, $sql)){
@@ -58,14 +65,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
 				// Redirect to appropriate page
-                switch($_SESSION["privilege"])
-				{
-					case 2 : header("location: superadmin.php");
-					break;
-					case 1 : header("location: admin.php");
-					break;
-					case 0 : header("location: welcome.php");
-				}
+                header("location: login.php");
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
             }
@@ -74,6 +74,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             mysqli_stmt_close($stmt);
         }
     }
+	else{
+		echo "Super admin accounts can not be deleted";
+	}
     
     // Close connection
     mysqli_close($link);

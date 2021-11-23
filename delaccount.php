@@ -29,18 +29,24 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 /* store result */
                 mysqli_stmt_store_result($stmt);
 				
+				
 				mysqli_stmt_bind_result($stmt, $id, $privilege);
-				if(mysqli_stmt_fetch($stmt))
-				{
+				if(mysqli_stmt_fetch($stmt)){
 					if(mysqli_stmt_num_rows($stmt) < 1){
 						$name_err = "This account does not exist";
-					} else{
+					} 
+					else if($privilege == 2){
+						$name_err = "Superadmin accounts cannot be deleted";
+					}
+					else{
 						$name = trim($_POST["name"]);
 					}
 				}
-				else {
+				else{
 					$name_err = "This account does not exist";
 				}
+				
+				
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
             }
@@ -50,32 +56,28 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
     
-    // Check privilege before deleting from database
-    if($privilege != 2){
-        
-        // Prepare an delete statement
-        $sql = "DELETE FROM user WHERE name = ?";
-         
-        if($stmt = mysqli_prepare($link, $sql)){
-            // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "s", $param_name);
-            
-            // Set parameters
-            $param_name = $name;
-            // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
-				// Redirect to appropriate page
-                header("location: login.php");
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
-            }
+	if(empty($name_err))
+	{
+			// Prepare an delete statement
+			$sql = "DELETE FROM user WHERE name = ?";
+			 
+			if($stmt = mysqli_prepare($link, $sql)){
+				// Bind variables to the prepared statement as parameters
+				mysqli_stmt_bind_param($stmt, "s", $param_name);
+				
+				// Set parameters
+				$param_name = $name;
+				// Attempt to execute the prepared statement
+				if(mysqli_stmt_execute($stmt)){
+					// Redirect to appropriate page
+					header("location: login.php");
+				} else{
+					echo "Oops! Something went wrong. Please try again later.";
+				}
 
-            // Close statement
-            mysqli_stmt_close($stmt);
-        }
-    }
-	else{
-		echo "Super admin accounts can not be deleted";
+				// Close statement
+				mysqli_stmt_close($stmt);
+			}
 	}
     
     // Close connection

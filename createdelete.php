@@ -36,6 +36,6 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 		<a href="newaccount.php" class="btn btn-primary">Create New Account</a>
 		<a href="delaccount.php" class="btn btn-danger">Delete Existing Account</a>
     </p>
-	<p><a href="welcome.php">Return to main page</a>.</p>
+	<p><a href="login.php">Return to main page</a>.</p>
 </body>
 </html>

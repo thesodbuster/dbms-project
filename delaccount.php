@@ -57,8 +57,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $param_name = $name;
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
-                // Redirect to login page
-                header("location: welcome.php");
+				// Redirect to appropriate page
+                switch($_SESSION["privilege"])
+				{
+					case 2 : header("location: superadmin.php");
+					break;
+					case 1 : header("location: admin.php");
+					break;
+					case 0 : header("location: welcome.php");
+				}
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
             }

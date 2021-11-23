@@ -46,7 +46,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     # Send the email now that the variables are stored
     #mail($toemail, $subject, $message, $headers); ### REMINDER
     mail($rec_email, $subject, $msg, $headers);
-	header("location: welcome.php");
+	// Redirect to appropriate page
+    switch($_SESSION["privilege"])
+	{
+		case 2 : header("location: superadmin.php");
+		break;
+		case 1 : header("location: admin.php");
+		break;
+		case 0 : header("location: welcome.php");
+	}
 }
 
 ?>

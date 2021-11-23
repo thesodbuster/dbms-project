@@ -150,7 +150,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 <input type="submit" class="btn btn-primary" value="Submit">
                 <input type="reset" class="btn btn-secondary ml-2" value="Reset">
             </div>
-            <p><a href="welcome.php">Return to main page</a>.</p>
+            <p><a href="login.php">Return to main page</a>.</p>
         </form>
     </div>    
 </body>

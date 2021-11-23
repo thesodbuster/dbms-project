@@ -62,8 +62,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     mysqli_stmt_bind_result($stmt, $id, $name, $hashed_password, $email, $privilege);
                     if(mysqli_stmt_fetch($stmt)){
                         if(password_verify($password, $hashed_password)){
-							if($privilege == 2){
-								// Super admin privilege was given, so start the super admin page
+								// password verified
                             session_start();
                             
                             // Store data in session variables
@@ -73,38 +72,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 							$_SESSION["email"] = $email;
 							$_SESSION["privilege"] = $privilege;
 							
-                            
-                            // Redirect user to welcome page
-                            header("location: superadmin.php");
+							switch($_SESSION["privilege"])
+							{
+								case 2 : header("location: superadmin.php");
+								break;
+								case 1 : header("location: admin.php");
+								break;
+								case 0 : header("location: welcome.php");
 							}
-							else if($privilege == 1){
-								// Super admin privilege was given, so start the super admin page
-                            session_start();
-                            
-                            // Store data in session variables
-                            $_SESSION["loggedin"] = true;
-                            $_SESSION["id"] = $id;
-                            $_SESSION["name"] = $name;
-							$_SESSION["email"] = $email;
-							$_SESSION["privilege"] = $privilege;                          
-                            
-                            // Redirect user to welcome page
-                            header("location: admin.php");
-							}
-							else{
-							// Password is correct, so start a new session
-                            session_start();
-                            
-                            // Store data in session variables
-                            $_SESSION["loggedin"] = true;
-                            $_SESSION["id"] = $id;
-                            $_SESSION["name"] = $name;  
-							$_SESSION["email"] = $email;							
-							$_SESSION["privilege"] = $privilege;
-                            
-                            // Redirect user to welcome page
-                            header("location: welcome.php");
-							}
+    exit;
+							
                         } else{
                             // Password is not valid, display a generic error message
                             $login_err = "Invalid username or password.";

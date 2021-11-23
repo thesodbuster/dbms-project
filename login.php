@@ -12,6 +12,8 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 require_once "config.php";
  
 // Define variables and initialize with empty values
+$adminPassword = "$2y$10$4ZBbe0NSRzBsYKoXVohrbOsbfh7ahjv0EMWvAH8FHZotfyaa8PTx2";
+$unhashedAdminPassword = "superadmin";
 $name = $password = $email = "";
 $name_err = $password_err = $login_err = $email_err = "";
  
@@ -55,17 +57,30 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     mysqli_stmt_bind_result($stmt, $id, $name, $hashed_password, $email);
                     if(mysqli_stmt_fetch($stmt)){
                         if(password_verify($password, $hashed_password)){
-                            // Password is correct, so start a new session
+							if(strcmp($password, $unhashedAdminPassword) == 0){
+								// Super admin password was given, so start the super admin page
                             session_start();
                             
                             // Store data in session variables
                             $_SESSION["loggedin"] = true;
                             $_SESSION["id"] = $id;
-                            $_SESSION["name"] = $name; 
-                            $_SESSION["email"] = $email;   # Stores logged in user's email                           
+                            $_SESSION["name"] = $name;                            
+                            
+                            // Redirect user to welcome page
+                            header("location: superadmin.php");
+							}
+							else{
+							// Password is correct, so start a new session
+                            session_start();
+                            
+                            // Store data in session variables
+                            $_SESSION["loggedin"] = true;
+                            $_SESSION["id"] = $id;
+                            $_SESSION["name"] = $name;                            
                             
                             // Redirect user to welcome page
                             header("location: welcome.php");
+							}
                         } else{
                             // Password is not valid, display a generic error message
                             $login_err = "Invalid username or password.";

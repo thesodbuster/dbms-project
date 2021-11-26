@@ -97,7 +97,7 @@ $semester = $semester_err = "";
 			<input type="text" name="order10" value="">
 			<a href="admin.php" class="btn btn-primary">View Details</a>
 			</div>
-            <p>Lost? <a href="welcome.php">Go back</a>.</p>
+            <p>Lost? <a href="admin.php">Go back</a>.</p>
         </form>
     </div>    
 </body>

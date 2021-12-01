@@ -11,14 +11,13 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 
 $submit_message = "";
 $alert_type = "";
-$hideAlert = true;
 
 // When form is submitted perform the following tasks
 if(isset($_POST['submitOrder'])) {
 
     $faculty_id = $_SESSION['id'];
     $semester = mysqli_real_escape_string($link, $_POST['semester']);
-    $course_id = mysqli_real_escape_string($link, $_POST['course_id']);
+    $order_id = mysqli_real_escape_string($link, $_POST['course_id']);
     $title = mysqli_real_escape_string($link, $_POST['title']);
     $authors = mysqli_real_escape_string($link, $_POST['authors']);
     $edition = mysqli_real_escape_string($link, $_POST['edition']);
@@ -26,21 +25,19 @@ if(isset($_POST['submitOrder'])) {
     $ISBN = mysqli_real_escape_string($link, $_POST['ISBN']);
     
     
+    $upsertOrder = "INSERT IGNORE INTO users.order(order_id, faculty_id, semester) VALUES('$order_id', '$faculty_id', '$semester')";
     // Submit insertion query for new book
-    $insertBook = "INSERT INTO book(ISBN, order_id, title, authors, edition, publisher) VALUES('$ISBN', '$course_id', '$title', '$authors', '$edition', '$publisher')";
+    $insertBook = "INSERT INTO book(ISBN, order_id, title, authors, edition, publisher) VALUES('$ISBN', '$order_id', '$title', '$authors', '$edition', '$publisher')";
     
     //mysqli_query($link, $upsertOrder);
-    if(mysqli_query($link, $insertBook)) {
+    if(mysqli_query($link, $upsertOrder) && mysqli_query($link, $insertBook)) {
         $submit_message = "Book order added successfully";
         $alert_type = "alert alert-success alert-dismissible";
-        $hideAlert = false;
 
     }
-
     else {
         $submit_message = "There was an error submitting your order. Please try again";
         $alert_type = "alert alert-danger alert-dismissible";
-        $hideAlert = false;
     }
 }?>
 
@@ -65,8 +62,8 @@ if(isset($_POST['submitOrder'])) {
             <div class="form-group">
                 <label>Semester:</label>
                 <select name="semester" class="form-select" value="<?php echo $semester; ?>">
-                    <option value="0">Fall 21</option>
-                    <option value="1">Spring 22</option>
+                    <option value="Fall 21">Fall 21</option>
+                    <option value="Spring 22">Spring 22</option>
                 </select>
             </div>
             <div class="form-group">

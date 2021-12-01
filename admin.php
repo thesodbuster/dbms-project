@@ -35,7 +35,6 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     <p>
         <a href="reset-password.php" class="btn btn-warning">Reset Your Password</a>
         <a href="logout.php" class="btn btn-danger ml-3">Sign Out of Your Account</a>
-		<a href="createdelete.php" class="btn btn-info">Create/Delete Accounts</a>
         <a href="broadcast.php" class="btn btn-primary">Broadcast an Email</a>
         <a href="singlemail.php" class="btn btn-secondary">Individual Email</a>
 		<a href="vieworders.php" class="btn btn-secondary">View Book Orders</a>

@@ -1,116 +1,48 @@
 <?php
-# Session verification
+// Session verification
 session_start();
 require_once "config.php";
 
-# Check if the user is logged in, if not then redirect them to login
+//Check if the user is logged in, if not then redirect them to login
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: login.php");
     exit;
 }
 
-# Initialize the form variables
-$title = $title_err = "";
-$names = $names_err = "";
-$edition = $edition_err = "";
-$publisher = $publisher_err = "";
-$isbn = $isbn_err = "";
+$submit_message = "";
+$alert_type = "";
+$hideAlert = true;
 
-# When form is submitted perform the following tasks
-if($_SERVER["REQUEST_METHOD"] == "POST"){
-// Prepare a select statement
-$sql = "SELECT * FROM books WHERE bookid = ?";
-        
-# Make sure a book order has not already been made this semester
-if($stmt = mysqli_prepare($link, $sql)){
-    // Bind variables to the prepared statement as parameters
-    mysqli_stmt_bind_param($stmt, "i", $param_name);
+// When form is submitted perform the following tasks
+if(isset($_POST['submitOrder'])) {
+
+    $faculty_id = $_SESSION['id'];
+    $semester = mysqli_real_escape_string($link, $_POST['semester']);
+    $course_id = mysqli_real_escape_string($link, $_POST['course_id']);
+    $title = mysqli_real_escape_string($link, $_POST['title']);
+    $authors = mysqli_real_escape_string($link, $_POST['authors']);
+    $edition = mysqli_real_escape_string($link, $_POST['edition']);
+    $publisher = mysqli_real_escape_string($link, $_POST['publisher']);
+    $ISBN = mysqli_real_escape_string($link, $_POST['ISBN']);
     
-    // Set parameters
-    $param_name = trim($_SESSION["id"]);
     
-    #Check if an order has already been made on this account
-    if(mysqli_stmt_execute($stmt)){
-        /* store result */
-        mysqli_stmt_store_result($stmt);
-        
-        if(mysqli_stmt_num_rows($stmt) == 1){
-            $isbn_err = "This account has already ordered this semester";
-        } else{
-            $isbn = trim($_POST["isbn"]);
-        }
-    } else{
-        echo "Oops! Something went wrong. Please try again later.";
+    // Submit insertion query for new book
+    $insertBook = "INSERT INTO book(ISBN, order_id, title, authors, edition, publisher) VALUES('$ISBN', '$course_id', '$title', '$authors', '$edition', '$publisher')";
+    
+    //mysqli_query($link, $upsertOrder);
+    if(mysqli_query($link, $insertBook)) {
+        $submit_message = "Book order added successfully";
+        $alert_type = "alert alert-success alert-dismissible";
+        $hideAlert = false;
+
     }
-    // Close statement
-    mysqli_stmt_close($stmt);
-}
 
-# Check for empty fields
-if(empty(trim($_POST["title"]))){
-    $title_err = "Please enter a title";
-} else {
-    $title = $_POST["title"];
-}
-if(empty(trim($_POST["names"]))){
-    $names_err = "Please enter an author name";
-} else {
-    $names = $_POST["names"];
-}
-if(empty(trim($_POST["edition"]))){
-    $edition_err = "Please enter an Edition";
-} else {
-    $edition = $_POST["edition"];
-}
-if(empty(trim($_POST["publisher"]))){
-    $publisher_err = "Please enter a Publisher";
-} else {
-    $publisher = $_POST["publisher"];
-}
-if(empty(trim($_POST["isbn"]))){
-    $isbn_err = "Please enter an ISBN";
-} else {
-    $isbn = $_POST["isbn"];
-}
-
-# Submit an insertion query for a new book
-if(empty($name_err) && empty($password_err) && empty($confirm_password_err)){
-        
-    // Prepare an insert statement
-    $sql = "INSERT INTO books (bookid, title, authors, edition, publisher, isbn) VALUES (?, ?, ?, ?, ?, ?)";
-     
-    if($stmt = mysqli_prepare($link, $sql)){
-        // Bind variables to the prepared statement as parameters
-        mysqli_stmt_bind_param($stmt, "issssi", $param_bookid, $param_title, $param_authors, $param_edition, $param_publisher, $param_isbn);
-        
-        // Set parameters
-        $param_bookid = $_SESSION["id"];
-        $param_title = $title;
-        $param_authors = $names;
-        $param_edition = $edition;
-        $param_publisher = $publisher;
-        $param_isbn = $isbn;
-        
-        // Attempt to execute the prepared statement
-        if(mysqli_stmt_execute($stmt)){
-            // Redirect to login page
-            echo "Success! Book Order submitted";
-            header("location: welcome.php");
-        } else{
-            echo "There was an error submitting your order";
-        }
-
-        // Close statement
-        mysqli_stmt_close($stmt);
+    else {
+        $submit_message = "There was an error submitting your order. Please try again";
+        $alert_type = "alert alert-danger alert-dismissible";
+        $hideAlert = false;
     }
-}
-
-
-
-}
-
-
-?>
+}?>
 
 
 
@@ -129,37 +61,46 @@ if(empty($name_err) && empty($password_err) && empty($confirm_password_err)){
     <div class="wrapper">
         <h2>Book Order</h2>
         <p>Please fill this form to submit a book order</p>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <form autocomplete="off" method="POST">
+            <div class="form-group">
+                <label>Semester:</label>
+                <select name="semester" class="form-select" value="<?php echo $semester; ?>">
+                    <option value="0">Fall 21</option>
+                    <option value="1">Spring 22</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Course ID</label>
+                <input required type="text" name="course_id" class="form-control">
+            </div>  
             <div class="form-group">
                 <label>Title</label>
-                <input type="text" name="title" class="form-control <?php echo (!empty($title_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $title; ?>">
-                <span class="invalid-feedback"><?php echo $title_err; ?></span>
+                <input required type="text" name="title" class="form-control">
             </div>    
             <div class="form-group">
-                <label>Author names</label>
-                <input type="text" name="names" class="form-control <?php echo (!empty($names_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $names; ?>">
-                <span class="invalid-feedback"><?php echo $password_err; ?></span>
+                <label>Author Names</label>
+                <input required type="text" name="authors" class="form-control">
             </div>
             <div class="form-group">
                 <label>Edition</label>
-                <input type="text" name="edition" class="form-control <?php echo (!empty($edition_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $edition; ?>">
-                <span class="invalid-feedback"><?php echo $edition_err; ?></span>
+                <input required type="text" name="edition" class="form-control">
             </div>
             <div class="form-group">
                 <label>Publisher</label>
-                <input type="text" name="publisher" class="form-control <?php echo (!empty($publisher_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $publisher; ?>">
-                <span class="invalid-feedback"><?php echo $publisher_err; ?></span>
+                <input required type="text" name="publisher" class="form-control">
             </div>
             <div class="form-group">
                 <label>ISBN</label>
-                <input type="text" name="isbn" class="form-control <?php echo (!empty($isbn_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $isbn; ?>">
-                <span class="invalid-feedback"><?php echo $isbn_err; ?></span>
+                <input required type="text" name="ISBN" class="form-control">
             </div>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Submit">
+                <input name= "submitOrder" type="submit" class="btn btn-primary" value="Submit">
                 <input type="reset" class="btn btn-secondary ml-2" value="Reset">
             </div>
             <p>Lost? <a href="welcome.php">Go back</a>.</p>
+            <div class="<?php echo $alert_type ?>" role="alert">
+                <?php echo $submit_message ?>
+            </div>
         </form>
     </div>    
 </body>

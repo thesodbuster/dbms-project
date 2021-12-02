@@ -9,8 +9,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     exit;
 }
 
-$submit_message = "";
-$alert_type = "";
+$success = false;
+$show_alert = false;
 
 // When form is submitted perform the following tasks
 if(isset($_POST['submitOrder'])) {
@@ -24,20 +24,19 @@ if(isset($_POST['submitOrder'])) {
     $publisher = mysqli_real_escape_string($link, $_POST['publisher']);
     $ISBN = mysqli_real_escape_string($link, $_POST['ISBN']);
     
-    
-    $upsertOrder = "INSERT IGNORE INTO users.order(order_id, faculty_id, semester) VALUES('$order_id', '$faculty_id', '$semester')";
+    // Submit insertion query for new order if one doesn't already exist
+    $insertOrder = "INSERT IGNORE INTO users.order(order_id, faculty_id, semester) VALUES('$order_id', '$faculty_id', '$semester')";
     // Submit insertion query for new book
     $insertBook = "INSERT INTO book(ISBN, order_id, title, authors, edition, publisher) VALUES('$ISBN', '$order_id', '$title', '$authors', '$edition', '$publisher')";
     
-    //mysqli_query($link, $upsertOrder);
-    if(mysqli_query($link, $upsertOrder) && mysqli_query($link, $insertBook)) {
-        $submit_message = "Book order added successfully";
-        $alert_type = "alert alert-success alert-dismissible";
+    if(mysqli_query($link, $insertOrder) && mysqli_query($link, $insertBook)) {
+        $show_alert = true;
+        $success = true;
 
     }
     else {
-        $submit_message = "There was an error submitting your order. Please try again";
-        $alert_type = "alert alert-danger alert-dismissible";
+        $show_alert = true;
+        $success = false;
     }
 }?>
 
@@ -92,12 +91,14 @@ if(isset($_POST['submitOrder'])) {
             </div>
             <div class="form-group">
                 <input name= "submitOrder" type="submit" class="btn btn-primary" value="Submit">
-                <input type="reset" class="btn btn-secondary ml-2" value="Reset">
+                <input type="reset" class="btn btn-secondary ml-2" value="Clear">
             </div>
             <p>Lost? <a href="welcome.php">Go back</a>.</p>
-            <div class="<?php echo $alert_type ?>" role="alert">
-                <?php echo $submit_message ?>
-            </div>
+            <?php if ($show_alert && $success)
+                echo "<div class='alert alert-success alert-dismissible' role='alert'> Book order added successfully </div>";
+                else if ($show_alert && !$success)
+                echo "<div class='alert alert-danger alert-dismissible' role='alert'> There was an error submitting your order. Please try again </div>";
+            ?>
         </form>
     </div>    
 </body>

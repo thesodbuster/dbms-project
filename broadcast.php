@@ -40,7 +40,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     while($row = mysqli_fetch_row($result)){
         $toemail = $row[0];
         $message = "This is an announcement to professors to have their book orders completed by " . $date;
-        $message .= "\n\nClick the link to access our sign in page: http://localhost/dbms-project/dbms-project/login.php";
+        $message .= "\n\nClick the link to access our sign in page: http://localhost/dbms-project/login.php";
 
         mail($toemail, $subject, $message, $headers);
     }
@@ -81,9 +81,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
-                <input type="reset" class="btn btn-secondary ml-2" value="Reset">
+                <input type="reset" class="btn btn-secondary ml-2" value="Clear">
             </div>
         </form>
+        <a href="login.php">Return to main page</a>
     </div>
 </body>
 </html>

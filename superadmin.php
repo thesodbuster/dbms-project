@@ -28,16 +28,18 @@ mail($toemail, $subject, $message, $headers);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body{ font: 14px sans-serif; text-align: center; }
+        .btn-width{ width: 40%}
     </style>
 </head>
 <body>
     <h1 class="my-5">Hi, <b><?php echo htmlspecialchars($_SESSION["name"]); ?></b>. Welcome to the Super Admin site page.</h1>
     <p>
-        <a href="reset-password.php" class="btn btn-warning">Reset Your Password</a>
-        <a href="logout.php" class="btn btn-danger ml-3">Sign Out of Your Account</a>
-		<a href="createdelete.php" class="btn btn-info">Create/Delete Accounts</a>
-        <a href="broadcast.php" class="btn btn-primary">Broadcast an Email</a>
-        <a href="singlemail.php" class="btn btn-secondary">Individual Email</a>
+        <br /><br />
+		<a href="createdelete.php" class="btn btn-info btn-width">Create/Delete Admin</a><br /><br />
+        <a href="broadcast.php" class="btn btn-primary btn-width">Broadcast Email</a><br /><br />
+        <a href="singlemail.php" class="btn btn-secondary btn-width">Send Invite Email</a><br /><br /><br />
+        <a href="reset-password.php" class="btn btn-warning ">Reset Password</a>
+        <a href="logout.php" class="btn btn-danger ml-3 ">Sign Out</a>
     </p>
 </body>
 </html>

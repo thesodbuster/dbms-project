@@ -3,52 +3,54 @@
 require_once "config.php";
 
 # define variables and initialize with empty values
-$name =  "";
-$name_err =  "";
+$email = $email_err = $submit_err = "";
+
+$success = $show_alert = false;
 
 # Processing form data when form is submitted
-if($_SERVER["REQUEST_METHOD"] == "POST"){
-// Validate username
-    if(empty(trim($_POST["name"]))){
-        $name_err = "Please enter a name.";
-    } elseif(!preg_match('/^[a-zA-Z0-9_]+$/', trim($_POST["name"]))){
-        $name_err = "Name can only contain letters, numbers, and underscores.";
-    } else{
+if($_SERVER["REQUEST_METHOD"] == "POST") {
+// Validate useremail
+    if(empty(trim($_POST["email"]))) {
+        $email_err = "Please enter a email.";
+    } 
+    else{
         // Prepare a select statement
-        $sql = "SELECT id, privilege FROM user WHERE name = ?";
+        $sql = "SELECT id, privilege FROM user WHERE email = ?";
         
-        if($stmt = mysqli_prepare($link, $sql)){
+        if($stmt = mysqli_prepare($link, $sql)) {
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "s", $param_name);
+            mysqli_stmt_bind_param($stmt, "s", $param_email);
             
             // Set parameters
-            $param_name = trim($_POST["name"]);
+            $param_email = trim($_POST["email"]);
             
             // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
+            if(mysqli_stmt_execute($stmt)) {
                 /* store result */
                 mysqli_stmt_store_result($stmt);
 				
 				
 				mysqli_stmt_bind_result($stmt, $id, $privilege);
-				if(mysqli_stmt_fetch($stmt)){
-					if(mysqli_stmt_num_rows($stmt) < 1){
-						$name_err = "This account does not exist";
+				if(mysqli_stmt_fetch($stmt)) {
+					if(mysqli_stmt_num_rows($stmt) < 1) {
+						$email_err = "This account does not exist";
 					} 
-					else if($privilege == 2){
-						$name_err = "Superadmin accounts cannot be deleted";
+					else if($privilege == 2) {
+						$email_err = "Super Admin accounts cannot be deleted";
 					}
-					else{
-						$name = trim($_POST["name"]);
+					else {
+						$email = trim($_POST["email"]);
 					}
 				}
 				else{
-					$name_err = "This account does not exist";
+					$email_err = "This account does not exist";
 				}
 				
 				
             } else{
-                echo "Oops! Something went wrong. Please try again later.";
+                $submit_err = "Oops! Something went wrong. Please try again later.";
+                $show_alert = true;
+                $success = false;
             }
 
             // Close statement
@@ -56,23 +58,25 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
     
-	if(empty($name_err))
+	if(empty($email_err))
 	{
 			// Prepare an delete statement
-			$sql = "DELETE FROM user WHERE name = ?";
+			$sql = "DELETE FROM user WHERE email = ?";
 			 
-			if($stmt = mysqli_prepare($link, $sql)){
+			if($stmt = mysqli_prepare($link, $sql)) {
 				// Bind variables to the prepared statement as parameters
-				mysqli_stmt_bind_param($stmt, "s", $param_name);
+				mysqli_stmt_bind_param($stmt, "s", $param_email);
 				
 				// Set parameters
-				$param_name = $name;
+				$param_email = $email;
 				// Attempt to execute the prepared statement
-				if(mysqli_stmt_execute($stmt)){
-					// Redirect to appropriate page
-					header("location: login.php");
+				if(mysqli_stmt_execute($stmt)) {
+					$show_alert = true;
+                    $success = true;
 				} else{
-					echo "Oops! Something went wrong. Please try again later.";
+					$submit_err = "Oops! Something went wrong. Please try again later.";
+                    $show_alert = true;
+                    $success = false;
 				}
 
 				// Close statement
@@ -98,12 +102,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 </head>
 <body>
     <div class="wrapper">
-        <p>Please fill this form to delete an existing account.</p>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <h2>Delete Account</h2>
+        <p>Enter the email of the account you want to delete</p>
+        <form autocomplete="off" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
-                <label>Name</label>
-                <input type="text" name="name" class="form-control <?php echo (!empty($name_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $name; ?>">
-                <span class="invalid-feedback"><?php echo $name_err; ?></span>
+                <label>Email</label>
+                <input type="text" name="email" class="form-control <?php echo (!empty($email_err)) ? 'is-invalid' : ''; ?>">
+                <span class="invalid-feedback"><?php echo $email_err; ?></span>
             </div>    
 			<div class="form-group">
                 <input type="submit" class="btn btn-danger" value="Delete">
@@ -111,6 +116,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             </div>
             <a href="createdelete.php">< Go back</a>
         </form>
+        <?php if ($show_alert && $success)
+            echo "<div class='alert alert-success alert-dismissible' role='alert'> Account successfully deleted </div>";
+            else if ($show_alert && !$success)
+            echo "<div class='alert alert-danger alert-dismissible' role='alert'> {$submit_err} </div>";
+        ?>
     </div>    
 </body>
 </html>

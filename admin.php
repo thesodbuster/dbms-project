@@ -24,20 +24,22 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Welcome</title>
+    <title>Welcome, Super Admin!</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body{ font: 14px sans-serif; text-align: center; }
+        .btn-width{ width: 40% }
     </style>
 </head>
 <body>
-    <h1 class="my-5">Hi, <b><?php echo htmlspecialchars($_SESSION["name"]); ?></b>. Welcome to the admin site.</h1>
+    <h1 class="my-5">Hi, <b><?php echo htmlspecialchars($_SESSION["name"]); ?></b>. Welcome to the Admin site page.</h1>
     <p>
-        <a href="reset-password.php" class="btn btn-warning">Reset Your Password</a>
-        <a href="logout.php" class="btn btn-danger ml-3">Sign Out of Your Account</a>
-        <a href="broadcast.php" class="btn btn-primary">Broadcast an Email</a>
-        <a href="singlemail.php" class="btn btn-secondary">Individual Email</a>
-		<a href="vieworders.php" class="btn btn-secondary">View Book Orders</a>
+        <br /><br />
+		<a href="vieworders.php" class="btn btn-info btn-width">View Book Orders</a><br /><br />
+        <a href="broadcast.php" class="btn btn-primary btn-width">Broadcast Email</a><br /><br />
+        <a href="singlemail.php" class="btn btn-secondary btn-width">Send Invite Email</a><br /><br /><br />
+        <a href="reset-password.php" class="btn btn-warning ">Reset Password</a>
+        <a href="logout.php" class="btn btn-danger ml-3 ">Sign Out</a>
     </p>
 </body>
 </html>

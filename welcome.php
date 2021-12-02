@@ -28,14 +28,17 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body{ font: 14px sans-serif; text-align: center; }
+        .btn-width{ width: 40% }
     </style>
 </head>
 <body>
     <h1 class="my-5">Hi, <b><?php echo htmlspecialchars($_SESSION["name"]); ?></b>. Welcome to the book order site.</h1>
     <p>
+        <br /><br />
+        <a href="bookorder.php" class="btn btn-primary btn-width">Submit a Book Order</a><br /><br />
+        <a href="vieworders.php" class="btn btn-info btn-width">View/Edit Book Orders</a><br /><br />
         <a href="reset-password.php" class="btn btn-warning">Reset Your Password</a>
         <a href="logout.php" class="btn btn-danger ml-3">Sign Out of Your Account</a>
-        <a href="bookorder.php" class="btn btn-primary">Submit a Book Order</a>
     </p>
 </body>
 </html>

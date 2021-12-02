@@ -73,8 +73,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 </head>
 <body>
 <div class="wrapper">
-        <h2>Broadcast Book Order Due Date to Professors</h2>
-        <p>Announcement to all Professors</p>
+        <h2>Book Order Invitation to Professors</h2>
+        <p>Send an invitation email to a professor</p>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
                 <label>To:</label>

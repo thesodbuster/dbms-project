@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL ^ E_WARNING); 
+
 # Session verification
 session_start();
 require_once "config.php";
@@ -16,7 +18,7 @@ $facultyID = $facultyID_err = "";
 $test = "variable has been passed";
 # When form is submitted perform the following tasks
 
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+if(isset($_POST['submit'])){
 // Prepare a select statement
     if(empty(trim($_POST["semester"]))){
         $semester_err = "Please enter a semester number";
@@ -46,11 +48,6 @@ $arrayCounter = 0;
 
 }     
 # Check for empty fields
-
-
-
-
-
 ?>
 
 
@@ -64,6 +61,7 @@ $arrayCounter = 0;
     <style>
         body{ font: 14px sans-serif; }
         .wrapper{ width: 360px; padding: 20px; margin: auto;}
+		.button{ width: 100px;}
     </style>
 </head>
 <body>
@@ -71,12 +69,18 @@ $arrayCounter = 0;
         <h2>View Book Orders</h2>
         <p>Please enter a semester number below</p>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div class="form-group">
-                <label>Semester</label>
-                <input type="text" name="semester" class="form-control <?php echo (!empty($semester_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $semester; ?>">
-                <span class="invalid-feedback"><?php echo $semester_err; ?></span>
-				<input type="submit" class="btn btn-primary" value="Submit">
-            </div> 
+			<div class="form-group">
+                <label>Semester:</label>
+                <select name="semester" class="form-select">
+					<option selected disabled> <?php echo $semester ? $semester : 'Select a semester';?></option>
+					<option value="Fall 20">Fall 20</option>
+					<option value="Spring 21">Spring 21</option>
+					<option value="Summer 21">Summer 21</option>
+                    <option value="Fall 21">Fall 21</option>
+                    <option value="Spring 22">Spring 22</option>
+                </select>
+				<input type="submit" name='submit' class="btn btn-sm btn-primary" value="Submit">
+            </div>
 			<?php
         if(array_key_exists('button1', $_POST)) {
             button1();
@@ -93,7 +97,7 @@ $arrayCounter = 0;
 			<label for="order1">Order 1:</label><br>
 			<input type="text" name="order1" value="<?php echo $array[0];?>">
 			<input type="hidden" name="faculty1" value="<?php echo $array[1];?>">
-			<input type="submit" name="button1" class="button" value="View Details">			
+			<input type="submit" name="button1" value="View Details">			
 			</div>
 			<?php
         if(array_key_exists('button2', $_POST)) {
@@ -112,7 +116,7 @@ $arrayCounter = 0;
 			<label for="order2">Order 2:</label><br>
 			<input type="text" name="order2" value="<?php echo $array[2];?>">
 			<input type="hidden" name="faculty2" value="<?php echo $array[3];?>">
-			<input type="submit" name="button2" class="button" value="View Details">			
+			<input type="submit" name="button2" value="View Details">			
 			</div>
 						<?php
         if(array_key_exists('button3', $_POST)) {
@@ -131,7 +135,7 @@ $arrayCounter = 0;
 			<label for="order3">Order 3:</label><br>
 			<input type="text" name="order3" value="<?php echo $array[4];?>">
 			<input type="hidden" name="faculty3" value="<?php echo $array[5];?>">
-			<input type="submit" name="button3" class="button" value="View Details">
+			<input type="submit" name="button3" value="View Details">
 			</div>
 			
 									<?php
@@ -151,7 +155,7 @@ $arrayCounter = 0;
 			<label for="order4">Order 4:</label><br>
 			<input type="text" name="order4" value="<?php echo $array[6];?>">
 			<input type="hidden" name="faculty4" value="<?php echo $array[7];?>">
-			<input type="submit" name="button4" class="button" value="View Details">
+			<input type="submit" name="button4" value="View Details">
 			</div>
 			
 											<?php
@@ -171,7 +175,7 @@ $arrayCounter = 0;
 			<label for="order5">Order 5:</label><br>
 			<input type="text" name="order5" value="<?php echo $array[8];?>">
 			<input type="hidden" name="faculty5" value="<?php echo $array[9];?>">
-			<input type="submit" name="button5" class="button" value="View Details">
+			<input type="submit" name="button5" value="View Details">
 			</div>
 								<?php
         if(array_key_exists('button6', $_POST)) {
@@ -189,7 +193,7 @@ $arrayCounter = 0;
 			<label for="order6">Order 6:</label><br>
 			<input type="text" name="order6" value="<?php echo $array[10];?>">
 			<input type="hidden" name="faculty6" value="<?php echo $array[11];?>">
-			<input type="submit" name="button6" class="button" value="View Details">
+			<input type="submit" name="button6" value="View Details">
 			</div>
 											<?php
         if(array_key_exists('button7', $_POST)) {
@@ -208,7 +212,7 @@ $arrayCounter = 0;
 			<label for="order7">Order 7:</label><br>
 			<input type="text" name="order7" value="<?php echo $array[12];?>">
 			<input type="hidden" name="faculty7" value="<?php echo $array[13];?>">
-			<input type="submit" name="button7" class="button" value="View Details">
+			<input type="submit" name="button7" value="View Details">
 			</div>
 			
 														<?php
@@ -228,7 +232,7 @@ $arrayCounter = 0;
 			<label for="order8">Order 8:</label><br>
 			<input type="text" name="order8" value="<?php echo $array[14];?>">
 			<input type="hidden" name="faculty8" value="<?php echo $array[15];?>">
-			<input type="submit" name="button8" class="button" value="View Details">
+			<input type="submit" name="button8" value="View Details">
 			</div>
 			
 				<?php
@@ -247,7 +251,7 @@ $arrayCounter = 0;
 			<label for="order9">Order 9:</label><br>
 			<input type="text" name="order9" value="<?php echo $array[16];?>">
 			<input type="hidden" name="faculty9" value="<?php echo $array[17];?>">
-			<input type="submit" name="button9" class="button" value="View Details">
+			<input type="submit" name="button9" value="View Details">
 			</div>
 				<?php
         if(array_key_exists('button10', $_POST)) {
@@ -266,7 +270,7 @@ $arrayCounter = 0;
 			<label for="order10">Order 10:</label><br>
 			<input type="text" name="order10" value="<?php echo $array[18];?>">
 			<input type="hidden" name="faculty10" value="<?php echo $array[19];?>">
-			<input type="submit" name="button10" class="button" value="View Details">
+			<input type="submit" name="button10" value="View Details">
 			</div>
             <p>Lost? <a href="admin.php">Go back</a>.</p>
         </form>

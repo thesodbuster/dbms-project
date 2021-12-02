@@ -93,7 +93,7 @@ if(isset($_POST['submitOrder'])) {
                 <input name= "submitOrder" type="submit" class="btn btn-primary" value="Submit">
                 <input type="reset" class="btn btn-secondary ml-2" value="Clear">
             </div>
-            <p>Lost? <a href="welcome.php">Go back</a>.</p>
+            <a href="welcome.php">< Go back</a>
             <?php if ($show_alert && $success)
                 echo "<div class='alert alert-success alert-dismissible' role='alert'> Book order added successfully </div>";
                 else if ($show_alert && !$success)

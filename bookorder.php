@@ -92,6 +92,7 @@ if(isset($_POST['submitOrder'])) {
                         if (isset($_POST['course_id'])) echo $_POST['course_id']; 
                         else if (isset($_SESSION['order_id'])) echo $_SESSION['order_id']; 
                     ?>"
+                    <?php echo (isset($_SESSION['semester'])) ? 'readonly' : ''; ?>
                 />
             </div>  
             <div class="form-group">

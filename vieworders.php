@@ -145,7 +145,7 @@ if(isset($_POST['edit'])) {
 				}
 			}
 		?>
-		<p>Lost? <a href="<?php echo $back?>">Go back</a>.</p>
+		<a href="<?php echo $back?>">< Go back</a>
     </div>    
 </body>
 </html>

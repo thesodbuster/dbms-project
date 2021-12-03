@@ -8,6 +8,12 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     exit;
 }
 
+switch($_SESSION["privilege"]) {
+	case 2 : header("location: superadmin.php");
+	break;
+	case 0 : header("location: welcome.php");
+}
+
 # Configure SMTP email server
 #ini_set("SMTP", "smtp.elasticemail.com");
 #ini_set("smtp_port", "2525");
@@ -24,7 +30,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Welcome, Super Admin!</title>
+    <title>Admin Home</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body{ font: 14px sans-serif; text-align: center; }

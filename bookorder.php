@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL ^ E_WARNING); 
 // Session verification
 session_start();
 require_once "config.php";
@@ -7,6 +8,13 @@ require_once "config.php";
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: login.php");
     exit;
+}
+
+if (isset($_SESSION["semester"]) && isset($_SESSION["order_id"])) {
+    $back = "editorder.php";
+}
+else {
+    $back = "welcome.php";
 }
 
 $success = false;
@@ -60,14 +68,31 @@ if(isset($_POST['submitOrder'])) {
         <form autocomplete="off" method="POST">
             <div class="form-group">
                 <label>Semester:</label>
-                <select name="semester" class="form-select" value="<?php echo $semester; ?>">
-                    <option value="Fall 21">Fall 21</option>
-                    <option value="Spring 22">Spring 22</option>
+                <select name="semester" class="form-select">
+                    <option selected disabled>Select..</option>
+                    <option value="Fall 21" <?php echo ((isset($_POST['semester']) && $_POST['semester'] === 'Fall 21') 
+                    || isset($_SESSION['semester']) && $_SESSION['semester'] === 'Fall 21') 
+                    ? 'selected' : ''; ?>
+                    <?php echo (isset($_SESSION['semester']) && $_SESSION['semester'] !== 'Fall 21') ? 'disabled' : ''; ?>
+                >Fall 21
+                </option>
+                    <option value="Spring 22" 
+                        <?php echo ((isset($_POST['semester']) && $_POST['semester'] === 'Spring 22') 
+                        || isset($_SESSION['semester']) && $_SESSION['semester'] === 'Spring 22') 
+                        ? 'selected' : ''; ?>
+                        <?php echo (isset($_SESSION['semester']) && $_SESSION['semester'] !== 'Spring 22') ? 'disabled' : ''; ?>
+                        >Spring 22
+                    </option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Course ID</label>
-                <input required type="text" name="course_id" class="form-control">
+                <input required type="text" name="course_id" class="form-control" 
+                    value="<?php 
+                        if (isset($_POST['course_id'])) echo $_POST['course_id']; 
+                        else if (isset($_SESSION['order_id'])) echo $_SESSION['order_id']; 
+                    ?>"
+                />
             </div>  
             <div class="form-group">
                 <label>Title</label>
@@ -93,7 +118,7 @@ if(isset($_POST['submitOrder'])) {
                 <input name= "submitOrder" type="submit" class="btn btn-primary" value="Submit">
                 <input type="reset" class="btn btn-secondary ml-2" value="Clear">
             </div>
-            <a href="welcome.php">< Go back</a>
+            <a href="<?php echo $back?>">< Go back</a>
             <?php if ($show_alert && $success)
                 echo "<div class='alert alert-success alert-dismissible' role='alert'> Book order added successfully </div>";
                 else if ($show_alert && !$success)

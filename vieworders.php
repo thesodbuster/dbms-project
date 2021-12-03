@@ -11,43 +11,37 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     exit;
 }
 
-# Initialize the form variables
-$semester = $semester_err = "";
-$orderID = $orderID_err = "";
-$facultyID = $facultyID_err = "";
-$test = "variable has been passed";
-# When form is submitted perform the following tasks
+switch($_SESSION["privilege"]) {
+	case 2 : $back = "superadmin.php";
+	break;
+	case 1 : $back = "admin.php";
+	break;
+	case 0 : $back = "welcome.php";
+}
 
-if(isset($_POST['submit'])){
-// Prepare a select statement
-    if(empty(trim($_POST["semester"]))){
-        $semester_err = "Please enter a semester number";
-    } 
-	else {
-        $semester = trim($_POST["semester"]);
-    }
+if(isset($_POST['delete'])) {
+	$order_id = mysqli_real_escape_string($link, $_POST['delete']);
+	$deleteBooks = "DELETE FROM users.book WHERE order_id='$order_id';";
+	$deleteOrder = "DELETE FROM users.order WHERE order_id='$order_id';";
 
-$array = array(" ", " ", " ", " ", " ", " ", " ", " ", " ", " "," ", " ", " ", " ", " ", " ", " ", " ", " ", " ");
-$arrayCounter = 0;
-	// Perform query
-	
-	if ($result = mysqli_query($link, "SELECT orderID, facultyID FROM user.order WHERE semester= ".$semester)) {
-		while ($row = mysqli_fetch_row($result)) {
-			//printf ("%s\n", $row[0]);
-			$array[$arrayCounter] = $row[0];
-			$arrayCounter = $arrayCounter + 1;
-			$array[$arrayCounter] = $row[1];
-			$arrayCounter = $arrayCounter + 1;
-			}
-  // Free result set
-  mysqli_free_result($result);
+	if (mysqli_query($link, $deleteBooks) && mysqli_query($link, $deleteOrder)) {
+		$show_alert = true;
+        $success = true;
+		$successMsg = "Order deleted successfully";
 	}
+	else {
+		$show_alert = true;
+        $success = false;
+		$errorMsg = "Could not delete order. Please try again later.";
+	}
+}
 
-//echo $semester;
+if(isset($_POST['edit'])) {
+	$_SESSION['order_id'] = mysqli_real_escape_string($link, $_POST['edit']);
 
+	header("location: editorder.php");
+}
 
-}     
-# Check for empty fields
 ?>
 
 
@@ -67,213 +61,91 @@ $arrayCounter = 0;
 <body>
     <div class="wrapper">
         <h2>View Book Orders</h2>
-        <p>Please enter a semester number below</p>
+        <p>Please select a semester to view</p>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 			<div class="form-group">
                 <label>Semester:</label>
                 <select name="semester" class="form-select">
-					<option selected disabled> <?php echo $semester ? $semester : 'Select a semester';?></option>
-					<option value="Fall 20">Fall 20</option>
-					<option value="Spring 21">Spring 21</option>
-					<option value="Summer 21">Summer 21</option>
-                    <option value="Fall 21">Fall 21</option>
-                    <option value="Spring 22">Spring 22</option>
+                    <option selected disabled>Select..</option>
+					<option value="Summer 21" <?php echo ((isset($_POST['semester']) && $_POST['semester'] === 'Summer 21') 
+						|| (isset($_SESSION['semester']) && $_SESSION['semester'] === 'Summer 21')) ? 'selected' : ''; ?>>Summer 21
+					</option>
+					<option value="Fall 21" <?php echo ((isset($_POST['semester']) && $_POST['semester'] === 'Fall 21') 
+						|| (isset($_SESSION['semester']) && $_SESSION['semester'] === 'Fall 21')) ? 'selected' : ''; ?>>Fall 21
+					</option>
+					<option value="Spring 22" <?php echo ((isset($_POST['semester']) && $_POST['semester'] === 'Spring 22') 
+						|| (isset($_SESSION['semester']) && $_SESSION['semester'] === 'Spring 22')) ? 'selected' : ''; ?>>Spring 22
+					</option>
                 </select>
 				<input type="submit" name='submit' class="btn btn-sm btn-primary" value="Submit">
             </div>
-			<?php
-        if(array_key_exists('button1', $_POST)) {
-            button1();
-        }
-        function button1() {
-			$_SESSION["orderID"] = $_POST["order1"];
-			$_SESSION["facultyID"] = $_POST["faculty1"];
-			//echo $_POST["order1"];
-			//echo $_POST["faculty1"];
-            header("location: viewbooks.php");
-        }
-    ?>
-			<div class ="row1">
-			<label for="order1">Order 1:</label><br>
-			<input type="text" name="order1" value="<?php echo $array[0];?>">
-			<input type="hidden" name="faculty1" value="<?php echo $array[1];?>">
-			<input type="submit" name="button1" value="View Details">			
-			</div>
-			<?php
-        if(array_key_exists('button2', $_POST)) {
-            button2();
-        }
-        function button2() {
-			$_SESSION["orderID"] = $_POST["order2"];
-			$_SESSION["facultyID"] = $_POST["faculty2"];
-			//echo $_POST["order1"];
-			//echo $_POST["faculty2"];
-            header("location: viewbooks.php");
-        }
-    ?>			
-			
-			<div class ="row2">
-			<label for="order2">Order 2:</label><br>
-			<input type="text" name="order2" value="<?php echo $array[2];?>">
-			<input type="hidden" name="faculty2" value="<?php echo $array[3];?>">
-			<input type="submit" name="button2" value="View Details">			
-			</div>
-						<?php
-        if(array_key_exists('button3', $_POST)) {
-            button3();
-        }
-        function button3() {
-			$_SESSION["orderID"] = $_POST["order3"];
-			$_SESSION["facultyID"] = $_POST["faculty3"];
-			//echo $_POST["order1"];
-			//echo $_POST["faculty3"];
-            header("location: viewbooks.php");
-        }
-    ?>	
-			
-			<div class ="row3">
-			<label for="order3">Order 3:</label><br>
-			<input type="text" name="order3" value="<?php echo $array[4];?>">
-			<input type="hidden" name="faculty3" value="<?php echo $array[5];?>">
-			<input type="submit" name="button3" value="View Details">
-			</div>
-			
-									<?php
-        if(array_key_exists('button4', $_POST)) {
-            button4();
-        }
-        function button4() {
-			$_SESSION["orderID"] = $_POST["order4"];
-			$_SESSION["facultyID"] = $_POST["faculty4"];
-			//echo $_POST["order1"];
-			//echo $_POST["faculty4"];
-            header("location: viewbooks.php");
-        }
-    ?>	
-			
-			<div class ="row4">
-			<label for="order4">Order 4:</label><br>
-			<input type="text" name="order4" value="<?php echo $array[6];?>">
-			<input type="hidden" name="faculty4" value="<?php echo $array[7];?>">
-			<input type="submit" name="button4" value="View Details">
-			</div>
-			
-											<?php
-        if(array_key_exists('button5', $_POST)) {
-            button5();
-        }
-        function button5() {
-			$_SESSION["orderID"] = $_POST["order5"];
-			$_SESSION["facultyID"] = $_POST["faculty5"];
-			//echo $_POST["order1"];
-			//echo $_POST["faculty5"];
-            header("location: viewbooks.php");
-        }
-    ?>		
-			
-			<div class ="row5">
-			<label for="order5">Order 5:</label><br>
-			<input type="text" name="order5" value="<?php echo $array[8];?>">
-			<input type="hidden" name="faculty5" value="<?php echo $array[9];?>">
-			<input type="submit" name="button5" value="View Details">
-			</div>
-								<?php
-        if(array_key_exists('button6', $_POST)) {
-            button6();
-        }
-        function button6() {
-			$_SESSION["orderID"] = $_POST["order6"];
-			$_SESSION["facultyID"] = $_POST["faculty6"];
-			//echo $_POST["order1"];
-			//echo $_POST["faculty6"];
-            header("location: viewbooks.php");
-        }
-    ?>
-			<div class ="row6">
-			<label for="order6">Order 6:</label><br>
-			<input type="text" name="order6" value="<?php echo $array[10];?>">
-			<input type="hidden" name="faculty6" value="<?php echo $array[11];?>">
-			<input type="submit" name="button6" value="View Details">
-			</div>
-											<?php
-        if(array_key_exists('button7', $_POST)) {
-            button7();
-        }
-        function button7() {
-			$_SESSION["orderID"] = $_POST["order7"];
-			$_SESSION["facultyID"] = $_POST["faculty7"];
-			//echo $_POST["order1"];
-			//echo $_POST["faculty7"];
-            header("location: viewbooks.php");
-        }
-    ?>
-			
-			<div class ="row7">
-			<label for="order7">Order 7:</label><br>
-			<input type="text" name="order7" value="<?php echo $array[12];?>">
-			<input type="hidden" name="faculty7" value="<?php echo $array[13];?>">
-			<input type="submit" name="button7" value="View Details">
-			</div>
-			
-														<?php
-        if(array_key_exists('button8', $_POST)) {
-            button8();
-        }
-        function button8() {
-			$_SESSION["orderID"] = $_POST["order8"];
-			$_SESSION["facultyID"] = $_POST["faculty8"];
-			//echo $_POST["order1"];
-			//echo $_POST["faculty8"];
-            header("location: viewbooks.php");
-        }
-    ?>
-	
-			<div class ="row8">
-			<label for="order8">Order 8:</label><br>
-			<input type="text" name="order8" value="<?php echo $array[14];?>">
-			<input type="hidden" name="faculty8" value="<?php echo $array[15];?>">
-			<input type="submit" name="button8" value="View Details">
-			</div>
-			
-				<?php
-        if(array_key_exists('button9', $_POST)) {
-            button9();
-        }
-        function button9() {
-			$_SESSION["orderID"] = $_POST["order9"];
-			$_SESSION["facultyID"] = $_POST["faculty9"];
-			//echo $_POST["order1"];
-			//echo $_POST["faculty9"];
-            header("location: viewbooks.php");
-        }
-    ?>
-			<div class ="row9">
-			<label for="order9">Order 9:</label><br>
-			<input type="text" name="order9" value="<?php echo $array[16];?>">
-			<input type="hidden" name="faculty9" value="<?php echo $array[17];?>">
-			<input type="submit" name="button9" value="View Details">
-			</div>
-				<?php
-        if(array_key_exists('button10', $_POST)) {
-            button10();
-        }
-        function button10() {
-			$_SESSION["orderID"] = $_POST["order10"];
-			$_SESSION["facultyID"] = $_POST["faculty10"];
-			//echo $_POST["order1"];
-			//echo $_POST["faculty10"];
-            header("location: viewbooks.php");
-        }
-    ?>			
-			
-			<div class ="row10">
-			<label for="order10">Order 10:</label><br>
-			<input type="text" name="order10" value="<?php echo $array[18];?>">
-			<input type="hidden" name="faculty10" value="<?php echo $array[19];?>">
-			<input type="submit" name="button10" value="View Details">
-			</div>
-            <p>Lost? <a href="admin.php">Go back</a>.</p>
         </form>
+		<?php if ($show_alert && $success)
+			echo "<div class='alert alert-success alert-dismissible' role='alert'> {$successMsg} </div>";
+			else if ($show_alert && !$success)
+			echo "<div class='alert alert-danger alert-dismissible' role='alert'> {$errorMsg} </div>";
+        ?>
+		<?php
+			if(isset($_POST['submit'])) {
+
+				$_SESSION['semester'] = mysqli_real_escape_string($link, $_POST['semester']);
+				$faculty_id = $_SESSION['id'];
+				$semester = mysqli_real_escape_string($link, $_POST['semester']);
+
+				if($_SESSION["privilege"] == 0) {
+					$getOrders = "SELECT order_id FROM users.order WHERE faculty_id = '$faculty_id' AND semester = '$semester'";
+				}
+				else {
+					$getOrders = "SELECT name, order_id FROM users.user a INNER JOIN users.order b ON a.id = b.faculty_id WHERE semester='$semester'";
+				}
+
+				$orders = mysqli_query($link, $getOrders);
+
+				if ($orders) {				
+					while($data = mysqli_fetch_array($orders)) {
+						$currentOrder = $data['order_id'];
+						$getBooks = "SELECT * FROM users.book WHERE order_id = '$currentOrder'";
+						$books = mysqli_query($link, $getBooks);
+						?>
+							<h5><?php echo $data['order_id']; ?></h5>
+							<?php if($_SESSION["privilege"] == 1){?> <h5>Ordered By: <?php echo $data['name']; }?></h5>
+						<?php
+						while($data2 = mysqli_fetch_array($books)) {
+						?>
+							<tr>
+								<b>Title:</b> <?php echo $data2['title']; ?></br>
+								<b>Author:</b> <?php echo $data2['authors']; ?></br>
+								<b>Publisher:</b> <?php echo $data2['publisher']; ?></br>
+								<b>Edition</b> <?php echo $data2['edition']; ?></br>
+								<b>ISBN:</b> <?php echo $data2['ISBN']; ?></br></br>
+							</tr>
+					<?php
+						}
+						if($_SESSION["privilege"] == 0) {
+					?>
+						<form method="POST">
+							<button type="submit" name='edit' class="btn btn-sm btn-info" value="<?php echo $data['order_id'];?>"> Edit Order </button>
+							<button type="submit" name='delete' class="btn btn-sm btn-danger" value="<?php echo $data['order_id'];?>"> Delete Order </button>
+							</br>
+						</form>
+					<?php
+						}
+					?>
+					</br>
+					<?php
+					}
+					if (mysqli_num_rows($orders) == 0) {?>
+						<h3> No orders found.</h3>
+					<?php
+					}
+				}
+				else { ?>
+					<h3> Error trying to retrieve orders. Please try again.</h3>
+				<?php
+				}
+			}
+		?>
+		<p>Lost? <a href="<?php echo $back?>">Go back</a>.</p>
     </div>    
 </body>
 </html>

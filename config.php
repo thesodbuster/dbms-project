@@ -5,7 +5,7 @@ define('DB_USERNAME', 'root');
 
 #### IMPORTANT ####
 # YOUR MYSQL PASSWORD HERE
-define('DB_PASSWORD', '');
+define('DB_PASSWORD', 'Blake414?');
 define('DB_NAME', 'users');
 
 # Attempt to connect to the database
